@@ -22,12 +22,19 @@ document.addEventListener('DOMContentLoaded', () => {
             allowInput: true,
             minDate: new Date(), // Minimum date is today
             onChange: function(selectedDates, dateStr, instance) {
-                // Update the minimum date for the corresponding end date picker
                 const parent = instance.input.closest('.planned-day-item');
                 if (parent) {
                     const endDatePicker = parent.querySelector('.date-picker[data-datepicker="end"]');
+                    const singleDayCheckbox = parent.querySelector('.single-day');
+                    
                     if (endDatePicker && endDatePicker.flatpickr) {
                         endDatePicker.flatpickr.set('minDate', dateStr);
+                        
+                        // If single day is checked, update end date to match start date
+                        if (singleDayCheckbox && singleDayCheckbox.checked) {
+                            endDatePicker.value = dateStr;
+                            endDatePicker.flatpickr.setDate(dateStr, false);
+                        }
                     }
                 }
             }
@@ -38,6 +45,30 @@ document.addEventListener('DOMContentLoaded', () => {
             dateFormat: 'Y-m-d',
             allowInput: true,
             minDate: new Date() // Minimum date is today
+        });
+
+        // Initialize single day checkbox
+        document.querySelectorAll('.single-day').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('.planned-day-item');
+                if (parent) {
+                    const startDatePicker = parent.querySelector('.date-picker[data-datepicker="start"]');
+                    const endDatePicker = parent.querySelector('.date-picker[data-datepicker="end"]');
+                    
+                    if (startDatePicker && endDatePicker && endDatePicker.flatpickr) {
+                        if (this.checked) {
+                            // If single day is checked, set end date to match start date
+                            const startDate = startDatePicker.value;
+                            endDatePicker.value = startDate;
+                            endDatePicker.flatpickr.setDate(startDate, false);
+                        } else {
+                            // If single day is unchecked, clear end date
+                            endDatePicker.value = '';
+                            endDatePicker.flatpickr.clear();
+                        }
+                    }
+                }
+            });
         });
     }
 
@@ -53,13 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" class="date-picker start-date" placeholder="Start Date" data-datepicker="start">
                 <span class="to">to</span>
                 <input type="text" class="date-picker end-date" placeholder="End Date" data-datepicker="end">
+                <label class="single-day-label">
+                    <input type="checkbox" class="single-day">
+                    <span>Single day</span>
+                </label>
                 <button type="button" class="remove-day">Remove</button>
             </div>
         `;
 
         plannedDaysList.appendChild(newDayItem);
-        
-        // Reinitialize all date pickers after adding a new one
         initializeDatePickers();
 
         // Add remove button functionality
@@ -69,14 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const allItems = document.querySelectorAll('.planned-day-item');
             
             if (allItems.length === 1) {
-                // If this is the only row, clear the date fields
                 parent.querySelectorAll('.date-picker').forEach(input => {
                     input.value = '';
                 });
+                parent.querySelector('.single-day').checked = false;
             } else {
-                // If there are multiple rows, remove this one
                 parent.remove();
-                // Reinitialize date pickers after removal
                 initializeDatePickers();
             }
         });
@@ -89,14 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const allItems = document.querySelectorAll('.planned-day-item');
             
             if (allItems.length === 1) {
-                // If this is the only row, clear the date fields
                 parent.querySelectorAll('.date-picker').forEach(input => {
                     input.value = '';
                 });
+                parent.querySelector('.single-day').checked = false;
             } else {
-                // If there are multiple rows, remove this one
                 parent.remove();
-                // Reinitialize date pickers after removal
                 initializeDatePickers();
             }
         });
@@ -110,12 +139,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const futureDate = new Date(futureDateInput.value);
         const today = new Date();
 
-        // Calculate months between today and future date
-        const months = (futureDate.getFullYear() - today.getFullYear()) * 12 + 
-                      (futureDate.getMonth() - today.getMonth());
-
         // Calculate total PTO before planned days
-        let totalPTO = currentPTO + (monthlyAccrual * months);
+        let totalPTO = currentPTO;
+
+        // Calculate number of complete months between today and future date
+        // Only count complete months (accrual happens at end of month)
+        let currentDate = new Date(today);
+        while (currentDate <= futureDate) {
+            // Check if we've reached the end of the month
+            if (currentDate.getDate() === new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()) {
+                // Add monthly accrual at the end of the month
+                totalPTO += monthlyAccrual;
+            }
+            
+            // Move to next day
+            currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+        }
 
         // Subtract planned time off
         const plannedDays = document.querySelectorAll('.planned-day-item');

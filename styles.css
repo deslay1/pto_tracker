@@ -198,6 +198,58 @@ button:hover {
     z-index: 1000 !important;
 }
 
+.single-day-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #666;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.single-day-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.single-day-label span {
+    line-height: 1.5;
+}
+
+.single-day-label:hover {
+    color: #333;
+}
+
+.single-day-label input[type="checkbox"]:checked + span {
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+/* Hide end date and 'to' when single day is checked */
+.single-day:checked ~ .date-picker[data-datepicker="end"],
+.single-day:checked ~ .to {
+    display: none;
+}
+
+/* Adjust spacing when end date is hidden */
+.single-day:checked ~ .remove-day {
+    margin-left: 0.5rem;
+}
+
+/* Ensure proper spacing in mobile view */
+@media (max-width: 768px) {
+    .single-day:checked ~ .date-picker[data-datepicker="end"],
+    .single-day:checked ~ .to {
+        display: none;
+    }
+    
+    .single-day:checked ~ .remove-day {
+        margin-top: 0.5rem;
+    }
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
     .container {
