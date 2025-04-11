@@ -85,3 +85,208 @@ button:hover {
     color: #27ae60;
     font-size: 1.8rem;
 }
+
+.planned-days {
+    margin-top: 1.5rem;
+}
+
+.planned-days h3 {
+    color: #1a73e8;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.planned-days-list {
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.planned-day-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    flex-wrap: wrap;
+}
+
+.to {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.date-picker {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.hours-input {
+    max-width: 100px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.remove-day {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    min-width: 80px;
+    font-size: 0.875rem;
+}
+
+#add-day-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.flatpickr-day.selected.start {
+    background: #1a73e8 !important;
+}
+
+.flatpickr-day.selected.end {
+    background: #1557b0 !important;
+}
+
+.flatpickr-day.inRange {
+    background: rgba(26, 115, 232, 0.1) !important;
+}
+
+.flatpickr-day:hover, .flatpickr-day:focus {
+    background: #1557b0 !important;
+}
+
+.flatpickr-day.today {
+    border-color: #1a73e8;
+}
+
+.flatpickr-calendar {
+    z-index: 1000 !important;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .date-range {
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem;
+    }
+
+    .date-picker {
+        min-width: 100%;
+        max-width: 100%;
+        margin-bottom: 0.25rem;
+    }
+
+    .to {
+        width: 100%;
+        text-align: center;
+        padding: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    .remove-day {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .planned-day-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    input[type="number"] {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    button {
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    .input-group {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+    .container {
+        max-width: 600px;
+        padding: 2rem;
+    }
+
+    .date-range {
+        flex-direction: row;
+        gap: 0.75rem;
+    }
+
+    .date-picker {
+        min-width: 120px;
+        max-width: 120px;
+    }
+
+    .to {
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .remove-day {
+        min-width: 80px;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Add smooth transitions */
+.date-picker,
+.remove-day,
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+.date-picker:focus,
+.remove-day:hover,
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

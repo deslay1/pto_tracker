@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PTO Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <div class="container">
@@ -22,12 +24,28 @@
                 <label for="future-date">Select Future Date:</label>
                 <input type="date" id="future-date">
             </div>
+            <div class="planned-days">
+                <h3>Planned Time Off</h3>
+                <div class="planned-days-list" id="planned-days-list">
+                    <div class="planned-day-item">
+                        <div class="date-range">
+                            <input type="text" class="date-picker start-date" placeholder="Start Date" data-datepicker="start">
+                            <span class="to">to</span>
+                            <input type="text" class="date-picker end-date" placeholder="End Date" data-datepicker="end">
+                            <button type="button" class="remove-day">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="add-day-btn">Add Time Off</button>
+            </div>
             <button id="calculate-btn">Calculate PTO</button>
         </div>
         <div class="result" id="result">
             <h2>Future PTO Hours: <span id="pto-result">0</span></h2>
         </div>
     </div>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="script.js"></script>
 </body>
 </html>
