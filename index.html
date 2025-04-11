@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTO Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PTO Tracker</h1>
+        <div class="calculator">
+            <div class="input-group">
+                <label for="current-pto">Current PTO Hours:</label>
+                <input type="number" id="current-pto" placeholder="Enter current hours">
+            </div>
+            <div class="input-group">
+                <label for="monthly-accrual">Monthly Accrual (hours):</label>
+                <input type="number" id="monthly-accrual" placeholder="Enter monthly hours">
+            </div>
+            <div class="input-group">
+                <label for="future-date">Select Future Date:</label>
+                <input type="date" id="future-date">
+            </div>
+            <button id="calculate-btn">Calculate PTO</button>
+        </div>
+        <div class="result" id="result">
+            <h2>Future PTO Hours: <span id="pto-result">0</span></h2>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
