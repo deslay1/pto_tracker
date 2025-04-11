@@ -22,19 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
             allowInput: true,
             minDate: new Date(), // Minimum date is today
             onChange: function(selectedDates, dateStr, instance) {
+                // Update the minimum date for the corresponding end date picker
                 const parent = instance.input.closest('.planned-day-item');
                 if (parent) {
                     const endDatePicker = parent.querySelector('.date-picker[data-datepicker="end"]');
-                    const singleDayCheckbox = parent.querySelector('.single-day');
-                    
                     if (endDatePicker && endDatePicker.flatpickr) {
                         endDatePicker.flatpickr.set('minDate', dateStr);
-                        
-                        // If single day is checked, update end date to match start date
-                        if (singleDayCheckbox && singleDayCheckbox.checked) {
-                            endDatePicker.value = dateStr;
-                            endDatePicker.flatpickr.setDate(dateStr, false);
-                        }
                     }
                 }
             }
@@ -45,30 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
             dateFormat: 'Y-m-d',
             allowInput: true,
             minDate: new Date() // Minimum date is today
-        });
-
-        // Initialize single day checkbox
-        document.querySelectorAll('.single-day').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const parent = this.closest('.planned-day-item');
-                if (parent) {
-                    const startDatePicker = parent.querySelector('.date-picker[data-datepicker="start"]');
-                    const endDatePicker = parent.querySelector('.date-picker[data-datepicker="end"]');
-                    
-                    if (startDatePicker && endDatePicker && endDatePicker.flatpickr) {
-                        if (this.checked) {
-                            // If single day is checked, set end date to match start date
-                            const startDate = startDatePicker.value;
-                            endDatePicker.value = startDate;
-                            endDatePicker.flatpickr.setDate(startDate, false);
-                        } else {
-                            // If single day is unchecked, clear end date
-                            endDatePicker.value = '';
-                            endDatePicker.flatpickr.clear();
-                        }
-                    }
-                }
-            });
         });
     }
 
@@ -85,8 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="to">to</span>
                 <input type="text" class="date-picker end-date" placeholder="End Date" data-datepicker="end">
                 <label class="single-day-label">
-                    <input type="checkbox" class="single-day">
-                    <span>Single day</span>
+                    <input type="checkbox" class="single-day-checkbox">
+                    <span class="checkmark"></span>
+                    Single Day
                 </label>
                 <button type="button" class="remove-day">Remove</button>
             </div>
@@ -95,6 +65,17 @@ document.addEventListener('DOMContentLoaded', () => {
         plannedDaysList.appendChild(newDayItem);
         initializeDatePickers();
 
+        // Add single day checkbox functionality
+        const singleDayCheckbox = newDayItem.querySelector('.single-day-checkbox');
+        const endDateInput = newDayItem.querySelector('.date-picker.end-date');
+        
+        singleDayCheckbox.addEventListener('change', () => {
+            endDateInput.disabled = singleDayCheckbox.checked;
+            if (singleDayCheckbox.checked) {
+                endDateInput.value = '';
+            }
+        });
+
         // Add remove button functionality
         const removeBtn = newDayItem.querySelector('.remove-day');
         removeBtn.addEventListener('click', (e) => {
@@ -102,13 +83,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const allItems = document.querySelectorAll('.planned-day-item');
             
             if (allItems.length === 1) {
+                // If this is the only row, clear all fields
                 parent.querySelectorAll('.date-picker').forEach(input => {
                     input.value = '';
                 });
-                parent.querySelector('.single-day').checked = false;
+                parent.querySelector('.single-day-checkbox').checked = false;
+                parent.querySelector('.date-picker.end-date').disabled = false;
             } else {
+                // If there are multiple rows, remove this one
                 parent.remove();
                 initializeDatePickers();
+            }
+        });
+    });
+
+    // Add single day checkbox functionality to existing items
+    document.querySelectorAll('.planned-day-item').forEach(item => {
+        const singleDayCheckbox = item.querySelector('.single-day-checkbox');
+        const endDateInput = item.querySelector('.date-picker.end-date');
+        
+        singleDayCheckbox.addEventListener('change', () => {
+            endDateInput.disabled = singleDayCheckbox.checked;
+            if (singleDayCheckbox.checked) {
+                endDateInput.value = '';
             }
         });
     });
@@ -120,11 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const allItems = document.querySelectorAll('.planned-day-item');
             
             if (allItems.length === 1) {
+                // If this is the only row, clear all fields
                 parent.querySelectorAll('.date-picker').forEach(input => {
                     input.value = '';
                 });
-                parent.querySelector('.single-day').checked = false;
+                parent.querySelector('.single-day-checkbox').checked = false;
+                parent.querySelector('.date-picker.end-date').disabled = false;
             } else {
+                // If there are multiple rows, remove this one
                 parent.remove();
                 initializeDatePickers();
             }
@@ -161,22 +161,31 @@ document.addEventListener('DOMContentLoaded', () => {
         plannedDays.forEach(day => {
             const startDateInput = day.querySelector('.date-picker[data-datepicker="start"]').value;
             const endDateInput = day.querySelector('.date-picker[data-datepicker="end"]').value;
+            const singleDayCheckbox = day.querySelector('.single-day-checkbox');
             
-            if (startDateInput && endDateInput) {
+            if (startDateInput) {
                 const startDate = new Date(startDateInput);
-                const endDate = new Date(endDateInput);
                 
-                // Only count dates that are before or equal to the future date
-                const validStartDate = startDate <= futureDate ? startDate : futureDate;
-                const validEndDate = endDate <= futureDate ? endDate : futureDate;
-                
-                // Calculate number of days between start and end date
-                const timeDiff = validEndDate.getTime() - validStartDate.getTime();
-                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
-                
-                // Calculate total hours for this interval (8 hours per day)
-                const totalHours = daysDiff * 8;
-                totalPTO -= totalHours;
+                // If it's a single day, only count one day
+                if (singleDayCheckbox.checked) {
+                    if (startDate <= futureDate) {
+                        totalPTO -= 8; // 8 hours for a single day
+                    }
+                } else if (endDateInput) {
+                    const endDate = new Date(endDateInput);
+                    
+                    // Only count dates that are before or equal to the future date
+                    const validStartDate = startDate <= futureDate ? startDate : futureDate;
+                    const validEndDate = endDate <= futureDate ? endDate : futureDate;
+                    
+                    // Calculate number of days between start and end date
+                    const timeDiff = validEndDate.getTime() - validStartDate.getTime();
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
+                    
+                    // Calculate total hours for this interval (8 hours per day)
+                    const totalHours = daysDiff * 8;
+                    totalPTO -= totalHours;
+                }
             }
         });
 
